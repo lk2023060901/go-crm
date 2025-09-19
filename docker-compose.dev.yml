@@ -1,0 +1,210 @@
+version: '3.8'
+
+services:
+  # PostgreSQL 数据库
+  postgres:
+    image: postgres:15-alpine
+    container_name: erp-postgres-dev
+    environment:
+      POSTGRES_DB: erp_dev
+      POSTGRES_USER: erp_user
+      POSTGRES_PASSWORD: erp_password
+      POSTGRES_MULTIPLE_DATABASES: "erp_auth,erp_user,erp_crm"
+    ports:
+      - "50001:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+      - ./scripts/init-multiple-databases.sh:/docker-entrypoint-initdb.d/init-multiple-databases.sh
+    networks:
+      - erp-network
+    restart: unless-stopped
+
+  # Redis 缓存
+  redis:
+    image: redis:7-alpine
+    container_name: erp-redis-dev
+    ports:
+      - "50002:6379"
+    volumes:
+      - redis_dev_data:/data
+    networks:
+      - erp-network
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+
+  # RabbitMQ 消息队列
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: erp-rabbitmq-dev
+    environment:
+      RABBITMQ_DEFAULT_USER: erp_user
+      RABBITMQ_DEFAULT_PASS: erp_password
+      RABBITMQ_DEFAULT_VHOST: erp_dev
+    ports:
+      - "50013:5672"   # AMQP port
+      - "50014:15672" # Management UI
+    volumes:
+      - rabbitmq_dev_data:/var/lib/rabbitmq
+    networks:
+      - erp-network
+    restart: unless-stopped
+
+  # Jaeger 链路追踪
+  jaeger:
+    image: jaegertracing/all-in-one:1.50
+    container_name: erp-jaeger-dev
+    environment:
+      COLLECTOR_OTLP_ENABLED: true
+    ports:
+      - "50012:16686" # Jaeger UI
+      - "14268:14268" # HTTP collector
+      - "6831:6831/udp" # UDP agent
+    networks:
+      - erp-network
+    restart: unless-stopped
+
+  # Prometheus 监控
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: erp-prometheus-dev
+    ports:
+      - "50011:9090"
+    volumes:
+      - ./configs/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_dev_data:/prometheus
+    networks:
+      - erp-network
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+
+  # Grafana 可视化
+  grafana:
+    image: grafana/grafana:latest
+    container_name: erp-grafana-dev
+    ports:
+      - "50010:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: false
+    volumes:
+      - grafana_dev_data:/var/lib/grafana
+      - ./configs/grafana/provisioning:/etc/grafana/provisioning
+    networks:
+      - erp-network
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+
+  # MinIO 对象存储 (S3 兼容)
+  minio:
+    image: minio/minio:latest
+    container_name: erp-minio-dev
+    ports:
+      - "50015:9000"   # API
+      - "50016:9001"   # Console
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - minio_dev_data:/data
+    networks:
+      - erp-network
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+
+  # Nginx 反向代理
+  nginx:
+    image: nginx:alpine
+    container_name: erp-nginx-dev
+    ports:
+      - "50003:80"
+    volumes:
+      - ./configs/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./configs/nginx/conf.d:/etc/nginx/conf.d:ro
+    networks:
+      - erp-network
+    restart: unless-stopped
+    depends_on:
+      - auth-service
+      - user-service
+      - crm-service
+
+  # 认证服务
+  auth-service:
+    build:
+      context: ./services/auth
+      dockerfile: Dockerfile.dev
+    container_name: erp-auth-service-dev
+    ports:
+      - "50004:8080"  # HTTP
+      - "50007:9090"  # gRPC
+    environment:
+      - CONFIG_PATH=/app/configs/config-dev.yaml
+    volumes:
+      - ./services/auth:/app
+    networks:
+      - erp-network
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - redis
+    command: go run cmd/main.go -conf=/app/configs
+
+  # 用户服务
+  user-service:
+    build:
+      context: ./services/user
+      dockerfile: Dockerfile.dev
+    container_name: erp-user-service-dev
+    ports:
+      - "50005:8080"  # HTTP
+      - "50008:9090"  # gRPC
+    environment:
+      - CONFIG_PATH=/app/configs/config-dev.yaml
+    volumes:
+      - ./services/user:/app
+    networks:
+      - erp-network
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - redis
+    command: go run cmd/main.go -conf=/app/configs
+
+  # CRM 服务
+  crm-service:
+    build:
+      context: ./services/crm
+      dockerfile: Dockerfile.dev
+    container_name: erp-crm-service-dev
+    ports:
+      - "50006:8080"  # HTTP
+      - "50009:9090"  # gRPC
+    environment:
+      - CONFIG_PATH=/app/configs/config-dev.yaml
+    volumes:
+      - ./services/crm:/app
+    networks:
+      - erp-network
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - redis
+    command: go run cmd/main.go -conf=/app/configs
+
+volumes:
+  postgres_dev_data:
+  redis_dev_data:
+  rabbitmq_dev_data:
+  prometheus_dev_data:
+  grafana_dev_data:
+  minio_dev_data:
+
+networks:
+  erp-network:
+    driver: bridge

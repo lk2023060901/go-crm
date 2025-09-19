@@ -1,0 +1,54 @@
+server:
+  http:
+    addr: 0.0.0.0:8080
+    timeout: 30s
+  grpc:
+    addr: 0.0.0.0:9090
+    timeout: 30s
+
+data:
+  database:
+    driver: postgres
+    source: "host=localhost port=50001 user=erp_user password=erp_password dbname=erp_auth sslmode=disable TimeZone=Asia/Shanghai"
+    max_idle_conns: 10
+    max_open_conns: 100
+    conn_max_lifetime: 3600s
+  redis:
+    addr: localhost:50002
+    password: ""
+    db: 0
+    read_timeout: 0.2s
+    write_timeout: 0.2s
+
+auth:
+  jwt:
+    secret: "your-super-secret-jwt-key-change-in-production"
+    expires_in: 86400 # 24小时
+    refresh_expires_in: 604800 # 7天
+  password:
+    min_length: 6
+    max_length: 50
+    require_numbers: true
+    require_symbols: false
+
+security:
+  cors:
+    allowed_origins:
+      - "http://localhost:50000"
+      - "https://erp.example.com"
+    allowed_methods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+      - OPTIONS
+    allowed_headers:
+      - Authorization
+      - Content-Type
+      - X-Requested-With
+    allow_credentials: true
+
+logging:
+  level: debug
+  format: json
+  output: stdout

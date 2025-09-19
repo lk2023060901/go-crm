@@ -1,0 +1,39 @@
+{
+  "name": "go-erp-monorepo",
+  "version": "1.0.0",
+  "description": "Go ERP Monorepo - 企业级资源管理系统",
+  "private": true,
+  "scripts": {
+    "dev:web": "cd apps/web && npm run dev",
+    "build:web": "cd apps/web && npm run build",
+    "lint:web": "cd apps/web && npm run lint",
+    "start:web": "cd apps/web && npm start",
+    "dev:all": "concurrently \"npm run dev:web\" \"npm run dev:services\"",
+    "dev:services": "docker-compose -f docker-compose.dev.yml up",
+    "build:services": "./scripts/build-services.sh",
+    "test": "npm run test:web && npm run test:services",
+    "test:web": "cd apps/web && npm test",
+    "test:services": "./scripts/test-services.sh",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "keywords": [
+    "erp",
+    "crm",
+    "enterprise",
+    "go",
+    "react",
+    "typescript",
+    "monorepo"
+  ],
+  "author": "ERP Team",
+  "license": "MIT"
+}
