@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Row, Col, Card, Statistic, Progress, Typography, Space, Button, Table, Tag } from 'antd';
+import { Row, Col, Card, Statistic, Progress, Typography, Space, Button, Table, Tag, Carousel } from 'antd';
 import {
   TeamOutlined,
   ShopOutlined,
@@ -107,12 +107,12 @@ export default function DashboardPage() {
       width: 100,
       render: (status) => {
         const statusMap = {
-          success: { color: 'green', text: '完成' },
-          warning: { color: 'orange', text: '警告' },
-          processing: { color: 'blue', text: '进行中' }
+          success: { className: 'tag-success', text: '完成' },
+          warning: { className: 'tag-warning', text: '警告' },
+          processing: { className: 'tag-processing', text: '进行中' }
         };
         const config = statusMap[status];
-        return <Tag color={config.color}>{config.text}</Tag>;
+        return <Tag className={config.className}>{config.text}</Tag>;
       }
     }
   ];
@@ -143,79 +143,123 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* 页面标题 */}
-      <div className="flex items-center justify-between">
-        <div>
-          <Title level={2} className="mb-2">
-            仪表板
-          </Title>
-          <Paragraph className="text-gray-600">
-            欢迎回来！这是您的业务概览
-          </Paragraph>
-        </div>
-        <Space>
-          <Button type="primary" icon={<PlusOutlined />}>
-            新增客户
-          </Button>
-          <Button icon={<PlusOutlined />}>
-            新增商机
-          </Button>
-        </Space>
-      </div>
-
-      {/* 统计卡片 */}
+      {/* 统计卡片和轮播 */}
       <Row gutter={[16, 16]}>
-        <Col xs={24} sm={12} lg={6}>
-          <Card>
-            <Statistic
-              title="总客户数"
-              value={156}
-              prefix={<TeamOutlined />}
-              suffix={
-                <span className="text-green-500 text-sm ml-2">
-                  <ArrowUpOutlined /> 12%
-                </span>
-              }
-            />
-          </Card>
+        {/* 左侧：2x2 统计卡片 */}
+        <Col xs={24} lg={12}>
+          <Row gutter={[16, 16]}>
+            <Col span={12}>
+              <Card>
+                <Statistic
+                  title="总客户数"
+                  value={156}
+                  prefix={<TeamOutlined />}
+                  suffix={
+                    <span className="text-success text-sm ml-2">
+                      <ArrowUpOutlined /> 12%
+                    </span>
+                  }
+                />
+              </Card>
+            </Col>
+            <Col span={12}>
+              <Card>
+                <Statistic
+                  title="活跃商机"
+                  value={42}
+                  prefix={<ShopOutlined />}
+                  suffix={
+                    <span className="text-success text-sm ml-2">
+                      <ArrowUpOutlined /> 8%
+                    </span>
+                  }
+                />
+              </Card>
+            </Col>
+            <Col span={12}>
+              <Card>
+                <Statistic
+                  title="本月收入"
+                  value={234560}
+                  valueStyle={{ fontSize: '24px' }}
+                  formatter={(value) => `¥${value.toLocaleString()}`}
+                  suffix={
+                    <span className="text-error text-sm ml-2">
+                      <ArrowDownOutlined /> 3%
+                    </span>
+                  }
+                />
+              </Card>
+            </Col>
+            <Col span={12}>
+              <Card>
+                <Statistic
+                  title="转化率"
+                  value={68.5}
+                  prefix={<TrophyOutlined />}
+                  suffix="%"
+                />
+              </Card>
+            </Col>
+          </Row>
         </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card>
-            <Statistic
-              title="活跃商机"
-              value={42}
-              prefix={<ShopOutlined />}
-              suffix={
-                <span className="text-green-500 text-sm ml-2">
-                  <ArrowUpOutlined /> 8%
-                </span>
-              }
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card>
-            <Statistic
-              title="本月收入"
-              value={234560}
-              prefix={<DollarOutlined />}
-              precision={2}
-              suffix={
-                <span className="text-red-500 text-sm ml-2">
-                  <ArrowDownOutlined /> 3%
-                </span>
-              }
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card>
-            <Statistic
-              title="转化率"
-              value={68.5}
-              prefix={<TrophyOutlined />}
-              suffix="%"
-            />
+
+        {/* 右侧：轮播幻灯片 */}
+        <Col xs={24} lg={12}>
+          <Card title="重要信息" style={{ height: '100%' }}>
+            <Carousel autoplay dots={{ className: 'custom-dots' }} dotPosition="bottom">
+              <div className="px-1" style={{ minHeight: '85px' }}>
+                <h4 className="text-sm font-semibold mb-2">团队表现</h4>
+                <div className="space-y-1">
+                  <div className="flex justify-between text-sm">
+                    <span>销售团队完成率</span>
+                    <span className="font-semibold text-success">120%</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>客服满意度</span>
+                    <span className="font-semibold text-success">98.5%</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>新客户转化</span>
+                    <span className="font-semibold text-success">15.2%</span>
+                  </div>
+                </div>
+              </div>
+              <div className="px-1" style={{ minHeight: '85px' }}>
+                <h4 className="text-sm font-semibold mb-2">系统公告</h4>
+                <div className="space-y-1">
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs">• 新增客户标签功能</span>
+                    <span className="text-xs text-gray-400">2024-12-20 14:30</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs">• 优化商机跟进流程</span>
+                    <span className="text-xs text-gray-400">2024-12-20 09:15</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs">• 增强数据导出功能</span>
+                    <span className="text-xs text-gray-400">2024-12-19 16:45</span>
+                  </div>
+                </div>
+              </div>
+              <div className="px-1" style={{ minHeight: '85px' }}>
+                <h4 className="text-sm font-semibold mb-2">市场洞察</h4>
+                <div className="space-y-1">
+                  <div className="flex justify-between text-sm">
+                    <span>市场增长率</span>
+                    <span className="font-semibold text-success">+15.2%</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>竞争指数</span>
+                    <span className="font-semibold text-warning">中等</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>机会评分</span>
+                    <span className="font-semibold text-success">8.5/10</span>
+                  </div>
+                </div>
+              </div>
+            </Carousel>
           </Card>
         </Col>
       </Row>
@@ -237,7 +281,7 @@ export default function DashboardPage() {
                   <span>合格线索</span>
                   <span>80</span>
                 </div>
-                <Progress percent={66.7} showInfo={false} strokeColor="#52c41a" />
+                <Progress percent={66.7} showInfo={false} strokeColor="#1890ff" />
               </div>
               <div>
                 <div className="flex justify-between mb-2">
@@ -251,7 +295,7 @@ export default function DashboardPage() {
                   <span>成交客户</span>
                   <span>28</span>
                 </div>
-                <Progress percent={23.3} showInfo={false} strokeColor="#f5222d" />
+                <Progress percent={23.3} showInfo={false} strokeColor="#52c41a" />
               </div>
             </Space>
           </Card>
@@ -266,10 +310,7 @@ export default function DashboardPage() {
                 </div>
                 <Progress
                   percent={46.9}
-                  strokeColor={{
-                    '0%': '#108ee9',
-                    '100%': '#87d068',
-                  }}
+                  strokeColor="#1890ff"
                 />
               </div>
               <div>

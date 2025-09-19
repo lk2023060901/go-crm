@@ -8,7 +8,10 @@
       "Bash(npm run dev:*)",
       "Bash(lsof:*)",
       "Bash(pkill:*)",
-      "Bash(tree:*)"
+      "Bash(tree:*)",
+      "Bash(cat:*)",
+      "Bash(node:*)",
+      "Bash(npm cache clean:*)"
     ],
     "deny": [],
     "ask": []

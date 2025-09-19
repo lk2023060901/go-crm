@@ -104,35 +104,26 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
   return (
     <Layout className="erp-layout">
-      {/* 左侧边栏 */}
-      <Sider
-        trigger={null}
-        collapsible
-        collapsed={collapsed}
-        className="erp-sidebar"
-        width={240}
+      {/* 顶部导航栏 - 占据全宽 */}
+      <Header
+        className="bg-white px-4 flex items-center justify-between shadow-sm border-b border-gray-200"
+        style={{ background: '#ffffff', borderBottom: '1px solid #f0f0f0' }}
       >
-        {/* Logo 区域 */}
-        <div className="erp-logo">
-          {collapsed ? 'ERP' : 'ERP 系统'}
-        </div>
+        <div className="flex items-center">
+          {/* Logo 和 Title 区域 */}
+          <div className="flex items-center mr-6">
+            <div className="erp-header-logo flex items-center justify-center">
+              <ShopOutlined className="text-2xl" style={{ color: '#1890ff' }} />
+            </div>
+            {!collapsed && (
+              <span className="erp-header-title ml-3">
+                ERP 管理系统
+              </span>
+            )}
+          </div>
 
-        {/* 导航菜单 */}
-        <Menu
-          theme="dark"
-          mode="inline"
-          defaultSelectedKeys={['dashboard']}
-          defaultOpenKeys={['crm']}
-          items={menuItems}
-          className="border-r-0"
-        />
-      </Sider>
-
-      {/* 主内容区 */}
-      <Layout>
-        {/* 顶部导航栏 */}
-        <Header className="bg-white px-4 flex items-center justify-between shadow-sm border-b">
-          <div className="flex items-center">
+          {/* 控制按钮和面包屑导航 - 与主内容区域对齐 */}
+          <div className="flex items-center" style={{ marginLeft: collapsed ? '16px' : '44px' }}>
             <Button
               type="text"
               icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
@@ -141,46 +132,70 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             />
 
             {/* 面包屑导航 */}
-            <div className="text-gray-600">
+            <div className="text-gray-600" style={{ color: '#595959' }}>
               {tenant?.name} / 仪表板
             </div>
           </div>
+        </div>
 
-          <div className="flex items-center space-x-4">
-            {/* 搜索 */}
+        <div className="flex items-center space-x-4">
+          {/* 搜索 */}
+          <Button
+            type="text"
+            icon={<SearchOutlined />}
+            className="text-gray-600"
+            style={{ color: '#595959' }}
+          />
+
+          {/* 通知 */}
+          <Badge count={3} size="small">
             <Button
               type="text"
-              icon={<SearchOutlined />}
+              icon={<BellOutlined />}
               className="text-gray-600"
+              style={{ color: '#595959' }}
             />
+          </Badge>
 
-            {/* 通知 */}
-            <Badge count={3} size="small">
-              <Button
-                type="text"
-                icon={<BellOutlined />}
-                className="text-gray-600"
+          {/* 用户信息 */}
+          <Dropdown
+            menu={{ items: userMenuItems }}
+            placement="bottomRight"
+          >
+            <Space className="cursor-pointer hover:bg-gray-50 px-2 py-1 rounded">
+              <Avatar
+                icon={<UserOutlined />}
+                src={user?.avatar}
+                size="small"
               />
-            </Badge>
+              <span className="text-gray-700 font-medium" style={{ color: '#595959' }}>
+                {user?.fullName}
+              </span>
+            </Space>
+          </Dropdown>
+        </div>
+      </Header>
 
-            {/* 用户信息 */}
-            <Dropdown
-              menu={{ items: userMenuItems }}
-              placement="bottomRight"
-            >
-              <Space className="cursor-pointer hover:bg-gray-50 px-2 py-1 rounded">
-                <Avatar
-                  icon={<UserOutlined />}
-                  src={user?.avatar}
-                  size="small"
-                />
-                <span className="text-gray-700 font-medium">
-                  {user?.fullName}
-                </span>
-              </Space>
-            </Dropdown>
-          </div>
-        </Header>
+      {/* Header 下方的主要区域 */}
+      <Layout>
+        {/* 左侧边栏 */}
+        <Sider
+          trigger={null}
+          collapsible
+          collapsed={collapsed}
+          className="erp-sidebar"
+          width={240}
+        >
+          {/* 导航菜单 */}
+          <Menu
+            theme="light"
+            mode="inline"
+            defaultSelectedKeys={['dashboard']}
+            defaultOpenKeys={['crm']}
+            items={menuItems}
+            className="border-r-0"
+          />
+        </Sider>
 
         {/* 页面内容 */}
         <Content className="erp-content p-6">

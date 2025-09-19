@@ -33,41 +33,258 @@ body {
   padding: 0;
 }
 
-/* ERP 系统自定义样式 */
+/* ERP 系统自定义样式 - 使用规范配色方案 */
 .erp-layout {
   min-height: 100vh;
 }
 
 .erp-sidebar {
-  background: #001529;
-  overflow: auto;
-  height: 100vh;
+  background: #fafafa;
+  border-right: 1px solid #f0f0f0;
+  overflow-y: auto;
+  height: calc(100vh - 64px - 16px);
+  box-shadow: 2px 0 8px rgba(0,0,0,0.04);
   position: fixed;
+  top: calc(64px + 16px);
   left: 0;
-  top: 0;
-  bottom: 0;
+  z-index: 50;
 }
 
 .erp-content {
-  margin-left: 200px;
-  background: #f0f2f5;
-  min-height: 100vh;
+  background: #ffffff;
+  min-height: calc(100vh - 64px - 16px);
+  margin-top: calc(64px + 16px);
+  margin-left: calc(240px + 16px);
+  padding-top: 16px;
+  border-radius: 8px 0 0 0;
+  overflow-y: auto;
+  height: calc(100vh - 64px - 16px);
 }
 
-/* Ant Design 自定义主题变量 */
-.ant-layout-sider-collapsed .erp-logo {
-  padding: 16px 8px;
+
+/* Sidebar 折叠状态处理 */
+.ant-layout-sider-collapsed + .ant-layout-content {
+  margin-left: calc(80px + 16px) !important;
 }
 
-.erp-logo {
-  height: 64px;
-  padding: 16px;
-  background: rgba(255, 255, 255, 0.1);
-  margin: 16px;
+/* 自定义菜单样式 - 浅色主题 */
+.ant-menu-light {
+  background: #fafafa;
+  border: none;
+  padding-top: 16px;
+}
+
+.ant-menu-light .ant-menu-item {
+  color: #595959;
+  margin: 4px 8px;
   border-radius: 6px;
-  display: flex;
+  height: 40px;
+  line-height: 40px;
+}
+
+.ant-menu-light .ant-menu-item:hover {
+  background: #f5f5f5;
+  color: #1890ff;
+}
+
+.ant-menu-light .ant-menu-item-selected {
+  background: #e6f7ff;
+  color: #1890ff;
+  font-weight: 500;
+}
+
+.ant-menu-light .ant-menu-submenu-title {
+  color: #595959;
+  margin: 4px 8px;
+  border-radius: 6px;
+  height: 40px;
+  line-height: 40px;
+}
+
+.ant-menu-light .ant-menu-submenu-title:hover {
+  background: #f5f5f5;
+  color: #1890ff;
+}
+
+/* 统计卡片样式 */
+.ant-statistic .ant-statistic-content-suffix {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: bold;
+}
+
+/* 成功状态颜色 */
+.text-success {
+  color: #52c41a;
+}
+
+/* 警告状态颜色 */
+.text-warning {
+  color: #faad14;
+}
+
+/* 错误状态颜色 */
+.text-error {
+  color: #f5222d;
+}
+
+/* 进度条颜色修正 */
+.ant-progress-bg {
+  background-color: #1890ff !important;
+}
+
+/* 标签颜色修正 */
+.ant-tag.tag-success {
+  background: #f6ffed;
+  border-color: #b7eb8f;
+  color: #52c41a;
+}
+
+.ant-tag.tag-processing {
+  background: #e6f7ff;
+  border-color: #91d5ff;
+  color: #1890ff;
+}
+
+.ant-tag.tag-warning {
+  background: #fffbe6;
+  border-color: #ffe58f;
+  color: #faad14;
+}
+
+/* Header Logo 和 Title 样式 */
+.erp-header-logo {
+  width: 32px;
+  height: 32px;
+  transition: all 0.3s ease;
+}
+
+.erp-header-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+}
+
+/* 响应式处理 */
+@media (max-width: 768px) {
+  .erp-header-title {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .erp-header-logo {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+/* 轮播容器高度修正 */
+.ant-carousel .slick-slider.slick-initialized {
+  height: auto !important;
+  padding-bottom: 28px !important;
+}
+
+.ant-carousel .slick-list {
+  height: auto !important;
+}
+
+/* 轮播指示器样式修正 */
+.ant-carousel .slick-dots {
+  position: absolute !important;
+  bottom: -16px !important;
+  left: 0 !important;
+  right: 0 !important;
+  margin-top: 0 !important;
+  padding-bottom: 0 !important;
+  z-index: 999 !important;
+  background: transparent !important;
+  height: auto !important;
+  min-height: 20px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Card body 溢出处理 - 确保轮播指示器可见 */
+.ant-card .ant-card-body {
+  overflow: visible !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* 针对轮播所在的Card特殊处理 */
+.ant-card:has(.ant-carousel) {
+  overflow: visible !important;
+}
+
+.ant-card:has(.ant-carousel) .ant-card-body {
+  padding: 16px !important;
+  position: relative !important;
+}
+
+.ant-carousel .slick-dots li {
+  display: inline-block !important;
+  width: 24px !important;
+  height: 4px !important;
+  margin: 0 4px !important;
+}
+
+.ant-carousel .slick-dots li button {
+  width: 24px !important;
+  height: 3px !important;
+  border-radius: 2px !important;
+  background: #d9d9d9 !important;
+  border: none !important;
+  opacity: 1 !important;
+  display: block !important;
+  box-sizing: border-box !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  transition: all 0.3s ease !important;
+}
+
+.ant-carousel .slick-dots li.slick-active {
+  width: 32px !important;
+  height: 4px !important;
+}
+
+.ant-carousel .slick-dots li.slick-active button {
+  background: #1890ff !important;
+  width: 32px !important;
+  height: 3px !important;
+  border: none !important;
+  opacity: 1 !important;
+  display: block !important;
+  box-sizing: border-box !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.custom-dots {
+  display: flex !important;
+  justify-content: center !important;
+  margin-top: 12px !important;
+  z-index: 10 !important;
+  position: relative !important;
+}
+
+/* Header 样式修正 - 固定顶部 + 保留间距 */
+.ant-layout-header {
+  background: #ffffff !important;
+  border-bottom: 1px solid #f0f0f0;
+  padding: 0 24px;
+  height: 64px;
+  line-height: 64px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  z-index: 100;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  margin-bottom: 16px;
 }

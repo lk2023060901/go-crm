@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, use } from 'react';
+import React, { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { MainLayout } from '@/components/layouts/main-layout';
 import { useAuthStore } from '@/lib/stores/auth-store';
@@ -10,14 +10,14 @@ export default function TenantLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: Promise<{ tenant: string }>;
+  params: { tenant: string };
 }) {
   const router = useRouter();
   const pathname = usePathname();
   const { isAuthenticated, isLoading } = useAuthStore();
 
-  // 使用 React.use() 解包异步参数
-  const { tenant } = use(params);
+  // 直接使用同步参数
+  const { tenant } = params;
 
   // 检查是否是认证相关的路径（不需要登录检查）
   const isAuthPath = pathname.includes('/login') || pathname.includes('/register');
